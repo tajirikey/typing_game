@@ -18,6 +18,67 @@ let gameState = {
   maxQuestions: 10, // 練習モードの問題数
 };
 
+// ひらがな→ローマ字変換マップ
+const hiraganaToRomaji = {
+  'あ': 'a', 'い': 'i', 'う': 'u', 'え': 'e', 'お': 'o',
+  'か': 'ka', 'き': 'ki', 'く': 'ku', 'け': 'ke', 'こ': 'ko',
+  'さ': 'sa', 'し': 'shi', 'す': 'su', 'せ': 'se', 'そ': 'so',
+  'た': 'ta', 'ち': 'chi', 'つ': 'tsu', 'て': 'te', 'と': 'to',
+  'な': 'na', 'に': 'ni', 'ぬ': 'nu', 'ね': 'ne', 'の': 'no',
+  'は': 'ha', 'ひ': 'hi', 'ふ': 'fu', 'へ': 'he', 'ほ': 'ho',
+  'ま': 'ma', 'み': 'mi', 'む': 'mu', 'め': 'me', 'も': 'mo',
+  'や': 'ya', 'ゆ': 'yu', 'よ': 'yo',
+  'ら': 'ra', 'り': 'ri', 'る': 'ru', 'れ': 're', 'ろ': 'ro',
+  'わ': 'wa', 'を': 'wo', 'ん': 'n',
+  'が': 'ga', 'ぎ': 'gi', 'ぐ': 'gu', 'げ': 'ge', 'ご': 'go',
+  'ざ': 'za', 'じ': 'ji', 'ず': 'zu', 'ぜ': 'ze', 'ぞ': 'zo',
+  'だ': 'da', 'ぢ': 'ji', 'づ': 'zu', 'で': 'de', 'ど': 'do',
+  'ば': 'ba', 'び': 'bi', 'ぶ': 'bu', 'べ': 'be', 'ぼ': 'bo',
+  'ぱ': 'pa', 'ぴ': 'pi', 'ぷ': 'pu', 'ぺ': 'pe', 'ぽ': 'po',
+  'きゃ': 'kya', 'きゅ': 'kyu', 'きょ': 'kyo',
+  'しゃ': 'sha', 'しゅ': 'shu', 'しょ': 'sho',
+  'ちゃ': 'cha', 'ちゅ': 'chu', 'ちょ': 'cho',
+  'にゃ': 'nya', 'にゅ': 'nyu', 'にょ': 'nyo',
+  'ひゃ': 'hya', 'ひゅ': 'hyu', 'ひょ': 'hyo',
+  'みゃ': 'mya', 'みゅ': 'myu', 'みょ': 'myo',
+  'りゃ': 'rya', 'りゅ': 'ryu', 'りょ': 'ryo',
+  'ぎゃ': 'gya', 'ぎゅ': 'gyu', 'ぎょ': 'gyo',
+  'じゃ': 'ja', 'じゅ': 'ju', 'じょ': 'jo',
+  'びゃ': 'bya', 'びゅ': 'byu', 'びょ': 'byo',
+  'ぴゃ': 'pya', 'ぴゅ': 'pyu', 'ぴょ': 'pyo',
+  'っ': '',
+  'ー': '-',
+};
+
+// ひらがなをローマ字に変換
+function convertToRomaji(hiragana) {
+  let romaji = '';
+  let i = 0;
+
+  while (i < hiragana.length) {
+    // 2文字の組み合わせをチェック（拗音など）
+    if (i < hiragana.length - 1) {
+      const twoChar = hiragana.substring(i, i + 2);
+      if (hiraganaToRomaji[twoChar]) {
+        romaji += hiraganaToRomaji[twoChar];
+        i += 2;
+        continue;
+      }
+    }
+
+    // 1文字をチェック
+    const oneChar = hiragana[i];
+    if (hiraganaToRomaji[oneChar] !== undefined) {
+      romaji += hiraganaToRomaji[oneChar];
+    } else {
+      romaji += oneChar; // 変換できない文字はそのまま
+    }
+    i++;
+  }
+
+  return romaji;
+}
+
 // 効果音（Web Audio API使用）
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -59,6 +120,7 @@ const elements = {
   resultScreen: null,
   currentKanji: null,
   kanjiReading: null,
+  kanjiRomaji: null,
   kanjiCategory: null,
   typingInput: null,
   feedback: null,
@@ -89,6 +151,7 @@ function initializeElements() {
   elements.resultScreen = document.getElementById('result-screen');
   elements.currentKanji = document.getElementById('current-kanji');
   elements.kanjiReading = document.getElementById('kanji-reading');
+  elements.kanjiRomaji = document.getElementById('kanji-romaji');
   elements.kanjiCategory = document.getElementById('kanji-category');
   elements.typingInput = document.getElementById('typing-input');
   elements.feedback = document.getElementById('feedback');
@@ -280,10 +343,18 @@ function getFilteredKanjiList() {
 
 function updateReadingDisplay() {
   if (gameState.showReading) {
+    // ひらがな表示
     elements.kanjiReading.textContent = gameState.currentKanji.reading;
     elements.kanjiReading.classList.remove('hidden');
+
+    // ローマ字表示（複数の読み方がある場合は最初のものを使用）
+    const firstReading = gameState.currentKanji.reading.split('・')[0];
+    const romaji = convertToRomaji(firstReading);
+    elements.kanjiRomaji.textContent = `打ち方: ${romaji}`;
+    elements.kanjiRomaji.classList.remove('hidden');
   } else {
     elements.kanjiReading.classList.add('hidden');
+    elements.kanjiRomaji.classList.add('hidden');
   }
 }
 

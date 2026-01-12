@@ -1,5 +1,5 @@
-/* マインクラフト風スタイル */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+/* iPad向け漢字タイピングゲーム */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap');
 
 :root {
   --grass-green: #7cb342;
@@ -19,15 +19,17 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'ヒラギノ丸ゴ ProN', sans-serif;
   background: linear-gradient(to bottom, var(--sky-blue) 0%, #81c784 100%);
   min-height: 100vh;
   padding: 20px;
   position: relative;
   overflow-x: hidden;
+  touch-action: manipulation;
 }
 
 /* ピクセルアート背景 */
@@ -78,7 +80,8 @@ header::after {
 h1 {
   color: var(--white);
   text-align: center;
-  font-size: 24px;
+  font-size: 32px;
+  font-weight: 800;
   text-shadow: 4px 4px 0 var(--black);
   line-height: 1.6;
 }
@@ -105,20 +108,23 @@ h1 {
 
 label {
   color: var(--white);
-  font-size: 10px;
+  font-size: 16px;
+  font-weight: 700;
   text-shadow: 2px 2px 0 var(--black);
 }
 
 select, button {
-  font-family: 'Press Start 2P', cursive;
-  padding: 12px 20px;
-  font-size: 12px;
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', sans-serif;
+  padding: 16px 24px;
+  font-size: 18px;
+  font-weight: 700;
   border: 4px solid var(--black);
   background: var(--white);
   cursor: pointer;
   box-shadow: 4px 4px 0 var(--black);
   transition: transform 0.1s;
-  image-rendering: pixelated;
+  border-radius: 8px;
+  min-height: 56px;
 }
 
 button {
@@ -162,13 +168,15 @@ button.challenge-btn {
 }
 
 .score-label {
-  font-size: 10px;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--black);
   margin-bottom: 8px;
 }
 
 .score-value {
-  font-size: 18px;
+  font-size: 28px;
+  font-weight: 800;
   color: var(--redstone-red);
   text-shadow: 2px 2px 0 var(--white);
 }
@@ -202,7 +210,8 @@ button.challenge-btn {
 }
 
 .current-kanji {
-  font-size: 120px;
+  font-size: 160px;
+  font-weight: 800;
   color: var(--black);
   margin-bottom: 20px;
   animation: bounce 1s ease-in-out;
@@ -215,18 +224,29 @@ button.challenge-btn {
 }
 
 .kanji-reading {
-  font-size: 24px;
+  font-size: 32px;
+  font-weight: 700;
   color: var(--diamond-blue);
   text-shadow: 2px 2px 0 var(--white);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.kanji-romaji {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--stone-gray);
+  margin-bottom: 16px;
+  font-style: italic;
 }
 
 .kanji-category {
-  font-size: 12px;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--stone-gray);
   background: var(--gold-yellow);
-  padding: 8px 16px;
+  padding: 12px 20px;
   border: 3px solid var(--black);
+  border-radius: 8px;
   display: inline-block;
 }
 
@@ -237,15 +257,18 @@ button.challenge-btn {
 }
 
 .typing-input {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 24px;
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', sans-serif;
+  font-size: 28px;
+  font-weight: 500;
   padding: 20px;
   border: 4px solid var(--black);
+  border-radius: 12px;
   background: var(--white);
   text-align: center;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   box-shadow: 4px 4px 0 var(--black);
+  min-height: 64px;
 }
 
 .typing-input:focus {
@@ -257,8 +280,9 @@ button.challenge-btn {
 /* フィードバック */
 .feedback {
   text-align: center;
-  font-size: 16px;
-  min-height: 40px;
+  font-size: 22px;
+  font-weight: 700;
+  min-height: 50px;
   margin-top: 20px;
 }
 
@@ -322,7 +346,8 @@ button.challenge-btn {
   left: 50%;
   transform: translate(-50%, -50%);
   color: var(--white);
-  font-size: 12px;
+  font-size: 18px;
+  font-weight: 700;
   text-shadow: 2px 2px 0 var(--black);
   z-index: 1;
 }
@@ -334,7 +359,8 @@ button.challenge-btn {
 }
 
 .start-screen h2 {
-  font-size: 20px;
+  font-size: 28px;
+  font-weight: 800;
   color: var(--black);
   margin-bottom: 30px;
   line-height: 1.8;
@@ -350,11 +376,12 @@ button.challenge-btn {
 .mode-card {
   background: var(--white);
   border: 4px solid var(--black);
-  padding: 30px;
+  border-radius: 12px;
+  padding: 40px;
   cursor: pointer;
   transition: transform 0.1s;
   box-shadow: 4px 4px 0 var(--black);
-  min-width: 250px;
+  min-width: 300px;
 }
 
 .mode-card:hover {
@@ -363,13 +390,15 @@ button.challenge-btn {
 }
 
 .mode-card h3 {
-  font-size: 16px;
+  font-size: 24px;
+  font-weight: 800;
   color: var(--diamond-blue);
   margin-bottom: 15px;
 }
 
 .mode-card p {
-  font-size: 10px;
+  font-size: 18px;
+  font-weight: 500;
   color: var(--stone-gray);
   line-height: 1.8;
 }
@@ -381,7 +410,8 @@ button.challenge-btn {
 }
 
 .result-screen h2 {
-  font-size: 24px;
+  font-size: 36px;
+  font-weight: 800;
   color: var(--gold-yellow);
   text-shadow: 3px 3px 0 var(--black);
   margin-bottom: 30px;
@@ -397,12 +427,14 @@ button.challenge-btn {
 .stat-item {
   background: var(--stone-gray);
   border: 4px solid var(--black);
+  border-radius: 12px;
   padding: 20px;
   color: var(--white);
 }
 
 .stat-value {
-  font-size: 32px;
+  font-size: 40px;
+  font-weight: 800;
   color: var(--gold-yellow);
   margin-top: 10px;
 }
@@ -461,28 +493,36 @@ button.challenge-btn {
 /* レスポンシブ */
 @media (max-width: 768px) {
   h1 {
-    font-size: 16px;
+    font-size: 24px;
   }
 
   .current-kanji {
-    font-size: 80px;
+    font-size: 100px;
   }
 
   .kanji-reading {
+    font-size: 24px;
+  }
+
+  .kanji-romaji {
     font-size: 18px;
   }
 
   .typing-input {
-    font-size: 18px;
+    font-size: 24px;
   }
 
   button, select {
-    font-size: 10px;
-    padding: 10px 15px;
+    font-size: 16px;
+    padding: 14px 20px;
   }
 
   .controls {
     flex-direction: column;
+  }
+
+  .mode-card {
+    min-width: 100%;
   }
 }
 
