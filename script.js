@@ -134,7 +134,7 @@ function getFingersForRomaji(romaji) {
     }
   }
 
-  return fingers.join('・');
+  return fingers;
 }
 
 // 効果音（Web Audio API使用）
@@ -180,6 +180,7 @@ const elements = {
   kanjiReading: null,
   kanjiRomaji: null,
   kanjiFingers: null,
+  fingerText: null,
   typingInput: null,
   feedback: null,
   scoreValue: null,
@@ -210,6 +211,7 @@ function initializeElements() {
   elements.kanjiReading = document.getElementById('kanji-reading');
   elements.kanjiRomaji = document.getElementById('kanji-romaji');
   elements.kanjiFingers = document.getElementById('kanji-fingers');
+  elements.fingerText = document.getElementById('finger-text');
   elements.typingInput = document.getElementById('typing-input');
   elements.feedback = document.getElementById('feedback');
   elements.scoreValue = document.getElementById('score-value');
@@ -410,13 +412,27 @@ function updateReadingDisplay() {
 
     // 指表示
     const fingers = getFingersForRomaji(romaji);
-    elements.kanjiFingers.textContent = `使う指: ${fingers}`;
+    const fingerLabel = fingers.length ? fingers.join('・') : 'なし';
+    if (elements.fingerText) {
+      elements.fingerText.textContent = `使う指: ${fingerLabel}`;
+    }
+    updateFingerVisual(fingers);
     elements.kanjiFingers.classList.remove('hidden');
   } else {
     elements.kanjiReading.classList.add('hidden');
     elements.kanjiRomaji.classList.add('hidden');
     elements.kanjiFingers.classList.add('hidden');
   }
+}
+
+function updateFingerVisual(activeFingers) {
+  if (!elements.kanjiFingers) return;
+  const fingerNodes = elements.kanjiFingers.querySelectorAll('.finger');
+  fingerNodes.forEach((node) => {
+    const fingerName = node.getAttribute('data-finger');
+    const isActive = fingerName && activeFingers.includes(fingerName);
+    node.classList.toggle('active', isActive);
+  });
 }
 
 // タイピング処理（Enterキーで送信）
