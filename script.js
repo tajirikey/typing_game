@@ -215,7 +215,11 @@ function showStartScreen() {
 function showGameScreen() {
   hideAllScreens();
   elements.gameArea?.classList.remove('hidden');
-  elements.typingInput?.focus();
+
+  // フォーカスを確実に当てる（少し遅延させる）
+  setTimeout(() => {
+    elements.typingInput?.focus();
+  }, 100);
 }
 
 function showResultScreen() {
@@ -321,6 +325,11 @@ function nextQuestion() {
 
   gameState.questionCount++;
   updateProgress();
+
+  // フォーカスを維持
+  setTimeout(() => {
+    elements.typingInput?.focus();
+  }, 50);
 }
 
 function getFilteredKanjiList() {
