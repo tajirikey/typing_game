@@ -235,8 +235,20 @@ button.challenge-btn {
   font-size: 24px;
   font-weight: 500;
   color: var(--stone-gray);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-style: italic;
+}
+
+.kanji-fingers {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--grass-green);
+  margin-bottom: 16px;
+  background: var(--gold-yellow);
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-block;
+  border: 3px solid var(--grass-green);
 }
 
 /* 入力エリア */
@@ -495,6 +507,10 @@ button.challenge-btn {
 
   .kanji-romaji {
     font-size: 18px;
+  }
+
+  .kanji-fingers {
+    font-size: 16px;
   }
 
   .typing-input {

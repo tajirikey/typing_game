@@ -49,9 +49,9 @@ const hiraganaToRomaji = {
   'ー': '-',
 };
 
-// ひらがなをローマ字に変換
-function convertToRomaji(hiragana) {
-  let romaji = '';
+// ひらがなをローマ字に変換（音節ごとに配列で返す）
+function convertToRomajiSegments(hiragana) {
+  const segments = [];
   let i = 0;
 
   while (i < hiragana.length) {
@@ -59,7 +59,7 @@ function convertToRomaji(hiragana) {
     if (i < hiragana.length - 1) {
       const twoChar = hiragana.substring(i, i + 2);
       if (hiraganaToRomaji[twoChar]) {
-        romaji += hiraganaToRomaji[twoChar];
+        segments.push(hiraganaToRomaji[twoChar]);
         i += 2;
         continue;
       }
@@ -68,14 +68,73 @@ function convertToRomaji(hiragana) {
     // 1文字をチェック
     const oneChar = hiragana[i];
     if (hiraganaToRomaji[oneChar] !== undefined) {
-      romaji += hiraganaToRomaji[oneChar];
+      const romaji = hiraganaToRomaji[oneChar];
+      // 促音（っ）の場合は次の文字の子音を重ねる
+      if (romaji === '' && i + 1 < hiragana.length) {
+        // 次の文字の最初の子音を取得
+        const nextChar = hiragana[i + 1];
+        if (hiraganaToRomaji[nextChar]) {
+          const nextRomaji = hiraganaToRomaji[nextChar];
+          if (nextRomaji) {
+            segments.push(nextRomaji[0]); // 子音のみ
+          }
+        }
+      } else if (romaji !== '') {
+        segments.push(romaji);
+      }
     } else {
-      romaji += oneChar; // 変換できない文字はそのまま
+      segments.push(oneChar); // 変換できない文字はそのまま
     }
     i++;
   }
 
-  return romaji;
+  return segments;
+}
+
+// ひらがなをローマ字に変換
+function convertToRomaji(hiragana) {
+  const segments = convertToRomajiSegments(hiragana);
+  return segments.join('-');
+}
+
+// キーと指の対応表
+const keyToFinger = {
+  // 左手小指
+  'q': '左小指', 'a': '左小指', 'z': '左小指', '1': '左小指',
+  // 左手薬指
+  'w': '左薬指', 's': '左薬指', 'x': '左薬指', '2': '左薬指',
+  // 左手中指
+  'e': '左中指', 'd': '左中指', 'c': '左中指', '3': '左中指',
+  // 左手人差し指
+  'r': '左人差指', 't': '左人差指', 'f': '左人差指', 'g': '左人差指',
+  'v': '左人差指', 'b': '左人差指', '4': '左人差指', '5': '左人差指',
+  // 右手人差し指
+  'y': '右人差指', 'u': '右人差指', 'h': '右人差指', 'j': '右人差指',
+  'n': '右人差指', 'm': '右人差指', '6': '右人差指', '7': '右人差指',
+  // 右手中指
+  'i': '右中指', 'k': '右中指', '8': '右中指', ',': '右中指',
+  // 右手薬指
+  'o': '右薬指', 'l': '右薬指', '9': '右薬指', '.': '右薬指',
+  // 右手小指
+  'p': '右小指', '0': '右小指', '-': '右小指', ';': '右小指',
+  '[': '右小指', ']': '右小指', '/': '右小指',
+};
+
+// ローマ字から指の使い方を取得
+function getFingersForRomaji(romaji) {
+  const fingers = [];
+  const seen = new Set();
+
+  for (const char of romaji.toLowerCase()) {
+    if (char === '-') continue;
+    const finger = keyToFinger[char];
+    if (finger && !seen.has(finger)) {
+      fingers.push(finger);
+      seen.add(finger);
+    }
+  }
+
+  return fingers.join('・');
 }
 
 // 効果音（Web Audio API使用）
@@ -120,6 +179,7 @@ const elements = {
   currentKanji: null,
   kanjiReading: null,
   kanjiRomaji: null,
+  kanjiFingers: null,
   typingInput: null,
   feedback: null,
   scoreValue: null,
@@ -149,6 +209,7 @@ function initializeElements() {
   elements.currentKanji = document.getElementById('current-kanji');
   elements.kanjiReading = document.getElementById('kanji-reading');
   elements.kanjiRomaji = document.getElementById('kanji-romaji');
+  elements.kanjiFingers = document.getElementById('kanji-fingers');
   elements.typingInput = document.getElementById('typing-input');
   elements.feedback = document.getElementById('feedback');
   elements.scoreValue = document.getElementById('score-value');
@@ -346,9 +407,15 @@ function updateReadingDisplay() {
     const romaji = convertToRomaji(firstReading).toUpperCase();
     elements.kanjiRomaji.textContent = `打ち方: ${romaji}`;
     elements.kanjiRomaji.classList.remove('hidden');
+
+    // 指表示
+    const fingers = getFingersForRomaji(romaji);
+    elements.kanjiFingers.textContent = `使う指: ${fingers}`;
+    elements.kanjiFingers.classList.remove('hidden');
   } else {
     elements.kanjiReading.classList.add('hidden');
     elements.kanjiRomaji.classList.add('hidden');
+    elements.kanjiFingers.classList.add('hidden');
   }
 }
 
