@@ -343,7 +343,7 @@ function updateReadingDisplay() {
 
     // ローマ字表示（複数の読み方がある場合は最初のものを使用）
     const firstReading = gameState.currentKanji.reading.split('・')[0];
-    const romaji = convertToRomaji(firstReading);
+    const romaji = convertToRomaji(firstReading).toUpperCase();
     elements.kanjiRomaji.textContent = `打ち方: ${romaji}`;
     elements.kanjiRomaji.classList.remove('hidden');
   } else {
