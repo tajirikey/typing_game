@@ -239,17 +239,6 @@ button.challenge-btn {
   font-style: italic;
 }
 
-.kanji-category {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--stone-gray);
-  background: var(--gold-yellow);
-  padding: 12px 20px;
-  border: 3px solid var(--black);
-  border-radius: 8px;
-  display: inline-block;
-}
-
 /* 入力エリア */
 .input-area {
   text-align: center;

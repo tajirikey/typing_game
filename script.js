@@ -10,7 +10,6 @@ let gameState = {
   startTime: null,
   showReading: true,
   selectedGrade: 'all', // 'all', 'grade1', 'grade2', 'grade3'
-  selectedCategory: 'all',
   timeLimit: 60, // チャレンジモードの制限時間（秒）
   timeRemaining: 60,
   timerInterval: null,
@@ -121,7 +120,6 @@ const elements = {
   currentKanji: null,
   kanjiReading: null,
   kanjiRomaji: null,
-  kanjiCategory: null,
   typingInput: null,
   feedback: null,
   scoreValue: null,
@@ -130,7 +128,6 @@ const elements = {
   progressBar: null,
   progressText: null,
   gradeSelect: null,
-  categorySelect: null,
   readingToggle: null,
   practiceBtn: null,
   challengeBtn: null,
@@ -152,7 +149,6 @@ function initializeElements() {
   elements.currentKanji = document.getElementById('current-kanji');
   elements.kanjiReading = document.getElementById('kanji-reading');
   elements.kanjiRomaji = document.getElementById('kanji-romaji');
-  elements.kanjiCategory = document.getElementById('kanji-category');
   elements.typingInput = document.getElementById('typing-input');
   elements.feedback = document.getElementById('feedback');
   elements.scoreValue = document.getElementById('score-value');
@@ -161,7 +157,6 @@ function initializeElements() {
   elements.progressBar = document.getElementById('progress-bar');
   elements.progressText = document.getElementById('progress-text');
   elements.gradeSelect = document.getElementById('grade-select');
-  elements.categorySelect = document.getElementById('category-select');
   elements.readingToggle = document.getElementById('reading-toggle');
   elements.timeDisplay = document.getElementById('time-display');
 }
@@ -183,17 +178,13 @@ function setupEventListeners() {
     gameState.selectedGrade = e.target.value;
   });
 
-  elements.categorySelect?.addEventListener('change', (e) => {
-    gameState.selectedCategory = e.target.value;
-  });
-
   elements.readingToggle?.addEventListener('change', (e) => {
     gameState.showReading = e.target.checked;
     updateReadingDisplay();
   });
 
-  // タイピング入力
-  elements.typingInput?.addEventListener('input', handleTypingInput);
+  // タイピング入力（Enterキーで送信）
+  elements.typingInput?.addEventListener('keydown', handleTypingInput);
 
   // 再スタート
   document.getElementById('restart-btn')?.addEventListener('click', () => {
@@ -309,7 +300,6 @@ function nextQuestion() {
 
   // 表示更新
   elements.currentKanji.textContent = gameState.currentKanji.kanji;
-  elements.kanjiCategory.textContent = `カテゴリ: ${gameState.currentKanji.category}`;
   updateReadingDisplay();
 
   // 入力クリア
@@ -342,11 +332,6 @@ function getFilteredKanjiList() {
     kanjiList = [...kanjiData[gameState.selectedGrade]];
   }
 
-  // カテゴリフィルター
-  if (gameState.selectedCategory !== 'all') {
-    kanjiList = kanjiList.filter(k => k.category === gameState.selectedCategory);
-  }
-
   return kanjiList;
 }
 
@@ -367,24 +352,21 @@ function updateReadingDisplay() {
   }
 }
 
-// タイピング処理
+// タイピング処理（Enterキーで送信）
 function handleTypingInput(e) {
+  // Enterキーが押されたときのみ処理
+  if (e.key !== 'Enter') return;
+
+  // デフォルトの動作を防ぐ
+  e.preventDefault();
+
   const input = e.target.value.trim();
 
+  // 空の入力は無視
   if (!input) return;
 
-  const correctReading = gameState.currentKanji.reading;
-  const possibleReadings = correctReading.split('・');
-
-  // 正解判定
-  const isCorrect = possibleReadings.some(reading =>
-    reading === input || reading.startsWith(input)
-  );
-
-  // Enterキーまたは完全一致で判定
-  if (e.inputType === 'insertLineBreak' || possibleReadings.includes(input)) {
-    checkAnswer(input);
-  }
+  // 答えをチェック
+  checkAnswer(input);
 }
 
 function checkAnswer(input) {
@@ -528,23 +510,3 @@ function displayResults() {
   rankElement.textContent = rank;
   rankElement.style.color = rankColor;
 }
-
-// カテゴリリストの動的生成
-function populateCategorySelect() {
-  const categories = new Set();
-  allKanji.forEach(k => categories.add(k.category));
-
-  const select = elements.categorySelect;
-  if (select) {
-    select.innerHTML = '<option value="all">すべて</option>';
-    Array.from(categories).sort().forEach(cat => {
-      const option = document.createElement('option');
-      option.value = cat;
-      option.textContent = cat;
-      select.appendChild(option);
-    });
-  }
-}
-
-// 初期化時にカテゴリを設定
-setTimeout(populateCategorySelect, 0);
