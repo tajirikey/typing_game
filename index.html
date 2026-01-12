@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>漢字タイピングゲーム - マインクラフト風</title>
+  <meta name="description" content="小学1-3年生向けの漢字が学べるタイピングゲーム">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- ヘッダー -->
+    <header>
+      <h1>漢字タイピングゲーム</h1>
+    </header>
+
+    <!-- コントロールパネル -->
+    <div class="controls">
+      <div class="control-group">
+        <label for="grade-select">学年</label>
+        <select id="grade-select">
+          <option value="all">すべて</option>
+          <option value="grade1">1年生</option>
+          <option value="grade2">2年生</option>
+          <option value="grade3">3年生</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="category-select">カテゴリ</label>
+        <select id="category-select">
+          <option value="all">すべて</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label class="checkbox-container">
+          <input type="checkbox" id="reading-toggle" checked>
+          <span>ふりがなを表示</span>
+        </label>
+      </div>
+
+      <button id="restart-btn">スタート画面へ</button>
+    </div>
+
+    <!-- スコアボード -->
+    <div class="scoreboard">
+      <div class="score-item">
+        <div class="score-label">スコア</div>
+        <div class="score-value" id="score-value">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">正解率</div>
+        <div class="score-value" id="accuracy-value">0%</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">連続正解</div>
+        <div class="score-value" id="streak-value">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">残り時間</div>
+        <div class="score-value" id="time-display">--:--</div>
+      </div>
+    </div>
+
+    <!-- プログレスバー -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+      <div class="progress-text" id="progress-text">0 / 10</div>
+    </div>
+
+    <!-- スタート画面 -->
+    <div class="game-area" id="start-screen">
+      <div class="start-screen">
+        <h2>モードを選択してね！</h2>
+        <div class="mode-selection">
+          <div class="mode-card" id="practice-mode-btn">
+            <h3>練習モード</h3>
+            <p>10問の漢字を<br>じっくり練習しよう！<br><br>自分のペースで<br>学習できるよ</p>
+          </div>
+          <div class="mode-card" id="challenge-mode-btn">
+            <h3>チャレンジモード</h3>
+            <p>60秒間で<br>何問正解できるかな？<br><br>タイムアタック<br>に挑戦！</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ゲーム画面 -->
+    <div class="game-area hidden" id="game-area">
+      <div class="question-display">
+        <div class="current-kanji" id="current-kanji">漢</div>
+        <div class="kanji-reading" id="kanji-reading">かん</div>
+        <div class="kanji-category" id="kanji-category">カテゴリ: 学校</div>
+      </div>
+
+      <div class="input-area">
+        <input
+          type="text"
+          id="typing-input"
+          class="typing-input"
+          placeholder="よみがなを入力してね"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <!-- 結果画面 -->
+    <div class="game-area hidden" id="result-screen">
+      <div class="result-screen">
+        <h2>お疲れ様でした！</h2>
+
+        <div class="result-stats">
+          <div class="stat-item">
+            <div class="score-label">ランク</div>
+            <div class="stat-value" id="result-rank">ブロンズ</div>
+          </div>
+          <div class="stat-item">
+            <div class="score-label">スコア</div>
+            <div class="stat-value" id="result-score">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="score-label">正解率</div>
+            <div class="stat-value" id="result-accuracy">0%</div>
+          </div>
+          <div class="stat-item">
+            <div class="score-label">問題数</div>
+            <div class="stat-value" id="result-questions">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="score-label">正解数</div>
+            <div class="stat-value" id="result-correct">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="score-label">最高連続</div>
+            <div class="stat-value" id="result-streak">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="score-label">プレイ時間</div>
+            <div class="stat-value" id="result-time">0秒</div>
+          </div>
+        </div>
+
+        <button id="play-again-btn" class="start-btn">もう一度プレイ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- スクリプト -->
+  <script src="kanji-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

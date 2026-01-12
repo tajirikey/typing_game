@@ -1,0 +1,18 @@
+{
+  "name": "kanji-typing-game",
+  "version": "1.0.0",
+  "description": "小学1-3年生向けの漢字が学べるタイピングゲーム（マインクラフト風）",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "kanji",
+    "typing",
+    "game",
+    "education",
+    "minecraft"
+  ],
+  "author": "",
+  "license": "MIT"
+}
