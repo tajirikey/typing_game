@@ -107,11 +107,22 @@ function saveVoiceSetting(enabled) {
   }
 }
 
+// 明るく聞こえる女性の声を優先する（iPad/Mac・Chrome・Edge の日本語の声）
+const BRIGHT_VOICE_NAMES = ['Kyoko', 'O-ren', 'Nanami', 'Google 日本語', 'Ayumi', 'Haruka'];
+
+function voiceScore(voice) {
+  const index = BRIGHT_VOICE_NAMES.findIndex((name) => voice.name.includes(name));
+  let score = index === -1 ? 0 : 100 - index * 10;
+  // 高音質版（拡張・プレミアム）があればそちらを使う
+  if (/enhanced|premium|拡張|プレミアム|natural/i.test(voice.name)) score += 5;
+  if (voice.localService) score += 1;
+  return score;
+}
+
 function pickJapaneseVoice() {
-  const voices = window.speechSynthesis.getVoices();
-  speech.voice = voices.find((v) => v.lang === 'ja-JP' && v.localService)
-    || voices.find((v) => v.lang.replace('_', '-').startsWith('ja'))
-    || null;
+  const voices = window.speechSynthesis.getVoices()
+    .filter((v) => v.lang.replace('_', '-').startsWith('ja'));
+  speech.voice = voices.sort((a, b) => voiceScore(b) - voiceScore(a))[0] || null;
 }
 
 function speak(text) {
@@ -121,8 +132,9 @@ function speak(text) {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ja-JP';
   if (speech.voice) utterance.voice = speech.voice;
-  utterance.rate = 1.15;
-  utterance.pitch = 1.2;
+  // 高め・少し速めで元気な声にする（pitch は 0〜2、上げすぎると機械っぽくなる）
+  utterance.rate = 1.2;
+  utterance.pitch = 1.5;
   window.speechSynthesis.speak(utterance);
 }
 
