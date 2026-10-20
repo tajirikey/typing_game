@@ -3,82 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#5d8f2f">
   <title>漢字タイピングゲーム - 小学2・3年生向け</title>
   <meta name="description" content="小学2・3年生向けの漢字が学べるタイピングゲーム。iPad対応でローマ字打ち方も表示。">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- ドット絵アイコン -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="sprite" aria-hidden="true">
+    <symbol id="px-grass" viewBox="0 0 16 16"><path fill="#9ccc65" d="M0 0h1v1h-1zM3 0h1v1h-1zM7 0h1v1h-1zM10 0h1v1h-1zM14 0h1v1h-1zM5 1h1v1h-1zM12 1h1v1h-1z"/><path fill="#7cb342" d="M1 0h2v1h-2zM4 0h3v1h-3zM8 0h2v1h-2zM11 0h3v1h-3zM15 0h1v1h-1zM0 1h2v1h-2zM3 1h2v1h-2zM6 1h3v1h-3zM10 1h2v1h-2zM13 1h3v1h-3zM0 2h1v1h-1zM2 2h2v1h-2zM5 2h2v1h-2zM8 2h3v1h-3zM12 2h2v1h-2zM15 2h1v1h-1zM3 3h1v1h-1zM6 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1z"/><path fill="#5d8f2f" d="M2 1h1v1h-1zM9 1h1v1h-1zM1 2h1v1h-1zM4 2h1v1h-1zM7 2h1v1h-1zM11 2h1v1h-1zM14 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM5 3h1v1h-1zM9 3h1v1h-1zM12 3h1v1h-1zM15 3h1v1h-1zM3 4h1v1h-1zM6 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1z"/><path fill="#8b6f47" d="M1 3h1v1h-1zM4 3h1v1h-1zM7 3h2v1h-2zM11 3h1v1h-1zM14 3h1v1h-1zM0 4h3v1h-3zM4 4h2v1h-2zM7 4h3v1h-3zM11 4h2v1h-2zM14 4h2v1h-2zM0 5h1v1h-1zM2 5h6v1h-6zM9 5h5v1h-5zM15 5h1v1h-1zM0 6h4v1h-4zM5 6h6v1h-6zM12 6h4v1h-4zM0 7h2v1h-2zM3 7h4v1h-4zM8 7h5v1h-5zM14 7h2v1h-2zM0 8h10v1h-10zM11 8h5v1h-5zM0 9h1v1h-1zM2 9h3v1h-3zM6 9h7v1h-7zM14 9h2v1h-2zM0 10h8v1h-8zM9 10h7v1h-7zM0 11h2v1h-2zM3 11h2v1h-2zM6 11h5v1h-5zM12 11h2v1h-2zM15 11h1v1h-1zM0 12h16v1h-16zM0 13h3v1h-3zM4 13h2v1h-2zM7 13h3v1h-3zM11 13h5v1h-5zM0 14h1v1h-1zM2 14h11v1h-11zM14 14h2v1h-2zM0 15h7v1h-7zM8 15h8v1h-8z"/><path fill="#6d5235" d="M1 5h1v1h-1zM14 5h1v1h-1zM11 6h1v1h-1zM2 7h1v1h-1zM7 7h1v1h-1zM5 9h1v1h-1zM13 9h1v1h-1zM8 10h1v1h-1zM2 11h1v1h-1zM11 11h1v1h-1zM6 13h1v1h-1zM1 14h1v1h-1zM13 14h1v1h-1z"/><path fill="#a1887f" d="M8 5h1v1h-1zM4 6h1v1h-1zM13 7h1v1h-1zM10 8h1v1h-1zM1 9h1v1h-1zM5 11h1v1h-1zM14 11h1v1h-1zM3 13h1v1h-1zM10 13h1v1h-1zM7 15h1v1h-1z"/></symbol>
+    <symbol id="px-clock" viewBox="0 0 16 16"><path fill="#3e2723" d="M5 0h6v1h-6zM3 1h2v1h-2zM11 1h2v1h-2zM2 2h1v1h-1zM13 2h1v1h-1zM1 3h1v1h-1zM14 3h1v1h-1zM1 4h1v1h-1zM8 4h1v1h-1zM14 4h1v1h-1zM0 5h1v1h-1zM8 5h1v1h-1zM15 5h1v1h-1zM0 6h1v1h-1zM8 6h1v1h-1zM15 6h1v1h-1zM0 7h1v1h-1zM8 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM8 8h4v1h-4zM15 8h1v1h-1zM0 9h1v1h-1zM15 9h1v1h-1zM0 10h1v1h-1zM15 10h1v1h-1zM1 11h1v1h-1zM14 11h1v1h-1zM1 12h1v1h-1zM14 12h1v1h-1zM2 13h1v1h-1zM13 13h1v1h-1zM3 14h2v1h-2zM11 14h2v1h-2zM5 15h6v1h-6z"/><path fill="#ffb300" d="M5 1h6v1h-6zM3 2h2v1h-2zM11 2h2v1h-2zM2 3h1v1h-1zM13 3h1v1h-1zM2 4h1v1h-1zM13 4h1v1h-1zM1 5h1v1h-1zM14 5h1v1h-1zM1 6h1v1h-1zM14 6h1v1h-1zM1 7h1v1h-1zM14 7h1v1h-1zM1 8h1v1h-1zM14 8h1v1h-1zM1 9h1v1h-1zM14 9h1v1h-1zM1 10h1v1h-1zM14 10h1v1h-1zM2 11h1v1h-1zM13 11h1v1h-1zM2 12h1v1h-1zM13 12h1v1h-1zM3 13h2v1h-2zM11 13h2v1h-2zM5 14h6v1h-6z"/><path fill="#ffd54f" d="M5 2h6v1h-6zM3 3h2v1h-2zM11 3h2v1h-2zM3 4h1v1h-1zM12 4h1v1h-1zM2 5h1v1h-1zM13 5h1v1h-1zM2 6h1v1h-1zM13 6h1v1h-1zM2 7h1v1h-1zM13 7h1v1h-1zM2 8h1v1h-1zM13 8h1v1h-1zM2 9h1v1h-1zM13 9h1v1h-1zM2 10h1v1h-1zM13 10h1v1h-1zM3 11h1v1h-1zM12 11h1v1h-1zM3 12h2v1h-2zM11 12h2v1h-2zM5 13h6v1h-6z"/><path fill="#fff8e1" d="M5 3h6v1h-6zM4 4h4v1h-4zM9 4h3v1h-3zM3 5h5v1h-5zM9 5h4v1h-4zM3 6h5v1h-5zM9 6h4v1h-4zM3 7h5v1h-5zM9 7h4v1h-4zM3 8h5v1h-5zM12 8h1v1h-1zM3 9h10v1h-10zM3 10h10v1h-10zM4 11h8v1h-8zM5 12h6v1h-6z"/></symbol>
+    <symbol id="px-diamond" viewBox="0 0 16 16"><path fill="#0d47a1" d="M4 1h8v1h-8zM3 2h1v1h-1zM12 2h1v1h-1zM2 3h1v1h-1zM13 3h1v1h-1zM1 4h1v1h-1zM14 4h1v1h-1zM0 5h16v1h-16zM0 6h1v1h-1zM15 6h1v1h-1zM1 7h1v1h-1zM14 7h1v1h-1zM2 8h1v1h-1zM13 8h1v1h-1zM3 9h1v1h-1zM12 9h1v1h-1zM4 10h1v1h-1zM11 10h1v1h-1zM5 11h1v1h-1zM10 11h1v1h-1zM6 12h1v1h-1zM9 12h1v1h-1zM7 13h2v1h-2z"/><path fill="#e1f5fe" d="M4 2h2v1h-2zM3 3h2v1h-2zM2 4h1v1h-1zM1 6h1v1h-1z"/><path fill="#81d4fa" d="M6 2h1v1h-1zM10 2h2v1h-2zM5 3h1v1h-1zM11 3h1v1h-1zM3 4h2v1h-2zM2 6h1v1h-1zM2 7h1v1h-1z"/><path fill="#4fc3f7" d="M7 2h3v1h-3zM6 3h5v1h-5zM12 3h1v1h-1zM5 4h8v1h-8zM3 6h10v1h-10zM3 7h9v1h-9zM3 8h8v1h-8zM4 9h6v1h-6zM5 10h4v1h-4zM6 11h2v1h-2z"/><path fill="#0288d1" d="M13 4h1v1h-1zM13 6h2v1h-2zM12 7h2v1h-2zM11 8h2v1h-2zM10 9h2v1h-2zM9 10h2v1h-2zM8 11h2v1h-2zM7 12h2v1h-2z"/></symbol>
+    <symbol id="px-star" viewBox="0 0 10 10"><path fill="#5d4037" d="M4 0h2v1h-2zM4 1h1v1h-1zM6 1h1v1h-1zM3 2h1v1h-1zM7 2h1v1h-1zM0 3h4v1h-4zM7 3h3v1h-3zM0 4h1v1h-1zM9 4h1v1h-1zM1 5h1v1h-1zM8 5h1v1h-1zM2 6h1v1h-1zM7 6h1v1h-1zM1 7h1v1h-1zM4 7h2v1h-2zM8 7h1v1h-1zM1 8h1v1h-1zM3 8h1v1h-1zM6 8h1v1h-1zM8 8h1v1h-1zM1 9h2v1h-2zM7 9h2v1h-2z"/><path fill="#ffd54f" d="M5 1h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM1 4h7v1h-7zM3 5h4v1h-4zM3 6h4v1h-4zM2 7h2v1h-2zM6 7h1v1h-1z"/><path fill="#fffde7" d="M5 2h1v1h-1zM5 3h1v1h-1z"/><path fill="#ffb300" d="M8 4h1v1h-1zM2 5h1v1h-1zM7 5h1v1h-1zM7 7h1v1h-1zM2 8h1v1h-1zM7 8h1v1h-1z"/></symbol>
+    <symbol id="px-target" viewBox="0 0 10 10"><path fill="#3e2723" d="M2 0h6v1h-6zM1 1h1v1h-1zM8 1h1v1h-1zM0 2h1v1h-1zM9 2h1v1h-1zM0 3h1v1h-1zM9 3h1v1h-1zM0 4h1v1h-1zM9 4h1v1h-1zM0 5h1v1h-1zM9 5h1v1h-1zM0 6h1v1h-1zM9 6h1v1h-1zM0 7h1v1h-1zM9 7h1v1h-1zM1 8h1v1h-1zM8 8h1v1h-1zM2 9h6v1h-6z"/><path fill="#e53935" d="M2 1h6v1h-6zM1 2h2v1h-2zM7 2h2v1h-2zM1 3h1v1h-1zM4 3h2v1h-2zM8 3h1v1h-1zM1 4h1v1h-1zM3 4h4v1h-4zM8 4h1v1h-1zM1 5h1v1h-1zM3 5h4v1h-4zM8 5h1v1h-1zM1 6h1v1h-1zM4 6h2v1h-2zM8 6h1v1h-1zM1 7h2v1h-2zM7 7h2v1h-2zM2 8h6v1h-6z"/><path fill="#ffffff" d="M3 2h4v1h-4zM2 3h2v1h-2zM6 3h2v1h-2zM2 4h1v1h-1zM7 4h1v1h-1zM2 5h1v1h-1zM7 5h1v1h-1zM2 6h2v1h-2zM6 6h2v1h-2zM3 7h4v1h-4z"/></symbol>
+    <symbol id="px-flame" viewBox="0 0 10 10"><path fill="#3e2723" d="M4 0h1v1h-1zM3 1h1v1h-1zM5 1h1v1h-1zM3 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM2 3h1v1h-1zM7 3h1v1h-1zM9 3h1v1h-1zM1 4h1v1h-1zM9 4h1v1h-1zM1 5h1v1h-1zM9 5h1v1h-1zM0 6h1v1h-1zM9 6h1v1h-1zM0 7h1v1h-1zM9 7h1v1h-1zM1 8h1v1h-1zM8 8h1v1h-1zM2 9h6v1h-6z"/><path fill="#f4511e" d="M4 1h1v1h-1zM4 2h2v1h-2zM3 3h2v1h-2zM6 3h1v1h-1zM8 3h1v1h-1zM2 4h2v1h-2zM6 4h3v1h-3zM2 5h1v1h-1zM7 5h2v1h-2zM1 6h2v1h-2zM8 6h1v1h-1zM1 7h1v1h-1zM8 7h1v1h-1zM2 8h1v1h-1zM7 8h1v1h-1z"/><path fill="#ffb300" d="M5 3h1v1h-1zM4 4h2v1h-2zM3 5h2v1h-2zM6 5h1v1h-1zM3 6h1v1h-1zM6 6h2v1h-2zM2 7h1v1h-1zM7 7h1v1h-1zM3 8h1v1h-1zM6 8h1v1h-1z"/><path fill="#fff176" d="M5 5h1v1h-1zM4 6h2v1h-2zM3 7h4v1h-4zM4 8h2v1h-2z"/></symbol>
+    <symbol id="px-hourglass" viewBox="0 0 10 10"><path fill="#8b6f47" d="M0 0h10v1h-10zM0 9h10v1h-10z"/><path fill="#3e2723" d="M1 1h1v1h-1zM8 1h1v1h-1zM1 2h1v1h-1zM8 2h1v1h-1zM2 3h1v1h-1zM7 3h1v1h-1zM3 4h1v1h-1zM6 4h1v1h-1zM3 5h1v1h-1zM6 5h1v1h-1zM2 6h1v1h-1zM7 6h1v1h-1zM1 7h1v1h-1zM8 7h1v1h-1zM1 8h1v1h-1zM8 8h1v1h-1z"/><path fill="#e3f2fd" d="M2 1h6v1h-6zM2 2h1v1h-1zM7 2h1v1h-1zM3 3h1v1h-1zM6 3h1v1h-1zM4 5h2v1h-2zM3 6h2v1h-2zM6 6h1v1h-1zM2 7h1v1h-1zM7 7h1v1h-1z"/><path fill="#ffd54f" d="M3 2h4v1h-4zM4 3h2v1h-2zM4 4h2v1h-2zM5 6h1v1h-1zM3 7h4v1h-4zM2 8h6v1h-6z"/></symbol>
+  </svg>
+  <div class="sky" aria-hidden="true">
+    <span class="cloud cloud-1"></span>
+    <span class="cloud cloud-2"></span>
+    <span class="cloud cloud-3"></span>
+  </div>
+  <div class="ground" aria-hidden="true"></div>
+
   <div class="container">
     <!-- ヘッダー -->
-    <header>
-      <h1>漢字タイピングゲーム</h1>
+    <header class="topbar">
+      <div class="brand">
+        <svg class="px brand-icon"><use href="#px-grass"/></svg>
+        <h1>漢字タイピング<span class="brand-sub">ゲーム</span></h1>
+      </div>
+
+      <!-- コントロールパネル -->
+      <div class="controls">
+        <div class="control-group grade-control">
+          <label for="grade-select">学年</label>
+          <select id="grade-select">
+            <option value="all">すべて</option>
+            <option value="grade1">1年生</option>
+            <option value="grade2">2年生</option>
+            <option value="grade3">3年生</option>
+          </select>
+        </div>
+
+        <label class="checkbox-container reading-control">
+          <input type="checkbox" id="reading-toggle" checked>
+          <span>ふりがな</span>
+        </label>
+
+        <button id="restart-btn" class="btn-stone home-btn">
+          <span aria-hidden="true">◀</span> スタートへ
+        </button>
+      </div>
     </header>
 
-    <!-- コントロールパネル -->
-    <div class="controls">
-      <div class="control-group">
-        <label for="grade-select">学年</label>
-        <select id="grade-select">
-          <option value="all">すべて</option>
-          <option value="grade1">1年生</option>
-          <option value="grade2">2年生</option>
-          <option value="grade3">3年生</option>
-        </select>
+    <!-- HUD：スコアボード＋プログレスバー -->
+    <section class="hud">
+      <div class="scoreboard">
+        <div class="score-item">
+          <svg class="px score-icon"><use href="#px-star"/></svg>
+          <div class="score-text">
+            <div class="score-label">スコア</div>
+            <div class="score-value" id="score-value">0</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <svg class="px score-icon"><use href="#px-target"/></svg>
+          <div class="score-text">
+            <div class="score-label">正解率</div>
+            <div class="score-value" id="accuracy-value">0%</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <svg class="px score-icon"><use href="#px-flame"/></svg>
+          <div class="score-text">
+            <div class="score-label"><span class="kanji-only">連続正解</span><span class="romaji-only">コンボ</span></div>
+            <div class="score-value" id="streak-value">0</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <svg class="px score-icon"><use href="#px-hourglass"/></svg>
+          <div class="score-text">
+            <div class="score-label"><span class="kanji-only">残り時間</span><span class="romaji-only">タイム</span></div>
+            <div class="score-value" id="time-display">--:--</div>
+          </div>
+        </div>
       </div>
 
-      <div class="control-group">
-        <label class="checkbox-container">
-          <input type="checkbox" id="reading-toggle" checked>
-          <span>ふりがなを表示</span>
-        </label>
+      <!-- プログレスバー -->
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+        <div class="progress-text" id="progress-text">0 / 10</div>
       </div>
-
-      <button id="restart-btn">スタート画面へ</button>
-    </div>
-
-    <!-- スコアボード -->
-    <div class="scoreboard">
-      <div class="score-item">
-        <div class="score-label">スコア</div>
-        <div class="score-value" id="score-value">0</div>
-      </div>
-      <div class="score-item">
-        <div class="score-label">正解率</div>
-        <div class="score-value" id="accuracy-value">0%</div>
-      </div>
-      <div class="score-item">
-        <div class="score-label"><span class="kanji-only">連続正解</span><span class="romaji-only">コンボ</span></div>
-        <div class="score-value" id="streak-value">0</div>
-      </div>
-      <div class="score-item">
-        <div class="score-label"><span class="kanji-only">残り時間</span><span class="romaji-only">タイム</span></div>
-        <div class="score-value" id="time-display">--:--</div>
-      </div>
-    </div>
-
-    <!-- プログレスバー -->
-    <div class="progress-container">
-      <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
-      <div class="progress-text" id="progress-text">0 / 10</div>
-    </div>
+    </section>
 
     <!-- スタート画面 -->
     <div class="game-area" id="start-screen">
       <div class="start-screen">
-        <h2>モードを選択してね！</h2>
+        <p class="eyebrow">MODE SELECT</p>
+        <h2>モードをえらんでね！</h2>
         <div class="mode-selection">
-          <div class="mode-card" id="practice-mode-btn">
-            <h3>練習モード</h3>
-            <p>10問の漢字を<br>じっくり練習しよう！<br><br>自分のペースで<br>学習できるよ</p>
-          </div>
-          <div class="mode-card" id="challenge-mode-btn">
-            <h3>チャレンジモード</h3>
-            <p>60秒間で<br>何問正解できるかな？<br><br>タイムアタック<br>に挑戦！</p>
-          </div>
-          <div class="mode-card mode-card-romaji" id="romaji-mode-btn">
-            <h3>ローマ字モード</h3>
-            <p>A〜Z のキーを<br>1つずつ打とう！<br><br>1行 → 3行へ<br>レベルアップ！</p>
-          </div>
+          <button type="button" class="mode-card mode-card-practice" id="practice-mode-btn">
+            <span class="mode-icon"><svg class="px"><use href="#px-grass"/></svg></span>
+            <span class="mode-body">
+              <span class="mode-title">練習モード</span>
+              <span class="mode-desc">10問の漢字を<br>じぶんのペースで練習</span>
+              <span class="mode-meta"><span class="chip">10問</span><span class="chip">じかん むせいげん</span></span>
+            </span>
+            <span class="mode-cta">あそぶ <span aria-hidden="true">▶</span></span>
+          </button>
+          <button type="button" class="mode-card mode-card-challenge" id="challenge-mode-btn">
+            <span class="mode-icon"><svg class="px"><use href="#px-clock"/></svg></span>
+            <span class="mode-body">
+              <span class="mode-title">チャレンジモード</span>
+              <span class="mode-desc">60秒で何問<br>正解できるかな？</span>
+              <span class="mode-meta"><span class="chip">60秒</span><span class="chip">タイムアタック</span></span>
+            </span>
+            <span class="mode-cta">あそぶ <span aria-hidden="true">▶</span></span>
+          </button>
+          <button type="button" class="mode-card mode-card-romaji" id="romaji-mode-btn">
+            <span class="mode-icon"><svg class="px"><use href="#px-diamond"/></svg></span>
+            <span class="mode-body">
+              <span class="mode-title">ローマ字モード</span>
+              <span class="mode-desc">A〜Z のキーを<br>1つずつ打とう！</span>
+              <span class="mode-meta"><span class="chip">全8レベル</span><span class="chip">1行 → 3行</span></span>
+            </span>
+            <span class="mode-cta">あそぶ <span aria-hidden="true">▶</span></span>
+          </button>
         </div>
       </div>
     </div>
@@ -86,9 +137,10 @@
     <!-- ローマ字モード：レベル選択 -->
     <div class="game-area hidden" id="romaji-select-screen">
       <div class="romaji-select">
+        <p class="eyebrow">LEVEL SELECT</p>
         <h2>レベルをえらんでね</h2>
         <div class="level-grid" id="level-grid"></div>
-        <button id="romaji-back-btn">もどる</button>
+        <button id="romaji-back-btn" class="btn-stone"><span aria-hidden="true">◀</span> もどる</button>
       </div>
     </div>
 
@@ -145,7 +197,9 @@
     <!-- ゲーム画面 -->
     <div class="game-area hidden" id="game-area">
       <div class="question-display">
-        <div class="current-kanji" id="current-kanji">漢</div>
+        <div class="kanji-tile">
+          <div class="current-kanji" id="current-kanji">漢</div>
+        </div>
         <div class="kanji-reading" id="kanji-reading">かん</div>
         <div class="kanji-romaji" id="kanji-romaji">KAN</div>
         <div class="kanji-fingers" id="kanji-fingers">
@@ -181,6 +235,7 @@
           spellcheck="false"
           inputmode="text"
         >
+        <div class="input-hint">入力したら <kbd>Enter</kbd> でこたえあわせ</div>
       </div>
 
       <div class="feedback" id="feedback"></div>
@@ -189,10 +244,11 @@
     <!-- 結果画面 -->
     <div class="game-area hidden" id="result-screen">
       <div class="result-screen">
-        <h2>お疲れ様でした！</h2>
+        <p class="eyebrow">RESULT</p>
+        <h2>おつかれさま！</h2>
 
         <div class="result-stats">
-          <div class="stat-item">
+          <div class="stat-item rank-item">
             <div class="score-label">ランク</div>
             <div class="stat-value" id="result-rank">ブロンズ</div>
           </div>
@@ -222,7 +278,7 @@
           </div>
         </div>
 
-        <button id="play-again-btn" class="start-btn">もう一度プレイ</button>
+        <button id="play-again-btn" class="start-btn">もう一度プレイ <span aria-hidden="true">▶</span></button>
       </div>
     </div>
   </div>
@@ -244,7 +300,7 @@
       <div class="clear-buttons">
         <button id="clear-next-btn" class="start-btn">つぎのレベルへ</button>
         <button id="clear-retry-btn">もういちど</button>
-        <button id="clear-select-btn">レベルえらび</button>
+        <button id="clear-select-btn" class="btn-stone">レベルえらび</button>
       </div>
     </div>
   </div>

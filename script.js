@@ -369,7 +369,7 @@ function updateReadingDisplay() {
     // ローマ字表示（複数の読み方がある場合は最初のものを使用）
     const firstReading = gameState.currentKanji.reading.split('・')[0];
     const romaji = convertToRomaji(firstReading).toUpperCase();
-    elements.kanjiRomaji.textContent = `打ち方: ${romaji}`;
+    renderRomajiChips(romaji);
     elements.kanjiRomaji.classList.remove('hidden');
 
     // 指表示
@@ -385,6 +385,20 @@ function updateReadingDisplay() {
     elements.kanjiRomaji.classList.add('hidden');
     elements.kanjiFingers.classList.add('hidden');
   }
+}
+
+// 打ち方を音ごとのチップで表示（TO-KO-RO → [TO][KO][RO]）
+function renderRomajiChips(romaji) {
+  const label = document.createElement('span');
+  label.className = 'romaji-label';
+  label.textContent = '打ち方';
+  const chips = romaji.split('-').filter(Boolean).map((segment) => {
+    const chip = document.createElement('span');
+    chip.className = 'romaji-chip';
+    chip.textContent = segment;
+    return chip;
+  });
+  elements.kanjiRomaji.replaceChildren(label, ...chips);
 }
 
 function updateFingerVisual(activeFingers) {
