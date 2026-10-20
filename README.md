@@ -8,7 +8,7 @@
 - **3つのゲームモード**:
   - 練習モード: 10問をじっくり練習
   - チャレンジモード: 60秒間のタイムアタック
-  - ローマ字モード: キーを1つずつ打つ練習。全8レベル（ホームポジション1行 → 上段・下段 → 2行 → ことば3行）。クリアで次のレベルが解放され、星の数はブラウザに保存
+  - ローマ字モード: キーを1つずつ打つ練習。全8レベル（ホームポジション1行 → 上段・下段 → 2行 → ことば3行）。クリアで次のレベルが解放され、星の数はブラウザに保存。打った文字の読み方を声で読み上げ（F →「エフ」、K→A →「か」）
 - **カスタマイズ機能**:
   - 学年別フィルター（1年/2年/3年）
   - カテゴリ別フィルター（動物、学校、自然など）
@@ -44,9 +44,27 @@
 ## 🛠️ 技術スタック
 
 - バニラHTML/CSS/JavaScript（フレームワーク不要）
-- Web Audio API（効果音）
-- Google Fonts（Press Start 2P）
+- Web Audio API（効果音・読み上げ）
+- Google Fonts（M PLUS Rounded 1c、Press Start 2P）
+
+## 🔊 読み上げ音声
+
+ローマ字モードの声は `voice/voice.mp3`（全部の言葉を1つにまとめた音声）と `voice/voice.json`（各言葉の位置）です。
+ページを開いたときに読み込んでおき、打った瞬間に Web Audio API で鳴らします。読み込めないときはブラウザの読み上げ（Web Speech API）を使います。
+
+音声は [Open JTalk](https://open-jtalk.sourceforge.net/)（pyopenjtalk）で作っています。作り直すときは:
+
+```sh
+pip install pyopenjtalk numpy   # ffmpeg も必要
+python tools/make_voice.py path/to/mei_happy.htsvoice
+```
+
+## 🙏 クレジット
+
+- 読み上げの声: HTS Voice "Mei"（mei_happy）
+  Copyright (c) 2009-2018 Nagoya Institute of Technology, Department of Computer Science.
+  [MMDAgent](https://www.mmdagent.jp/) — [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 
 ## 📝 ライセンス
 
-MIT
+MIT（読み上げの声のデータは上記のとおり CC BY 3.0）

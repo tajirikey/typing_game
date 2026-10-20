@@ -69,7 +69,8 @@ function saveRomajiProgress(progress) {
 
 const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-// ===== 読み上げ（Web Speech API） =====
+// ===== 読み上げ =====
+// 録音済みの声（voice/voice.mp3）を Web Audio で鳴らす。読み込めないときだけ Web Speech API で読む
 const VOICE_STORAGE_KEY = 'kanjiTyping.romajiVoice';
 
 const LETTER_NAMES = {
@@ -90,6 +91,48 @@ const speech = {
   enabled: true,
   voice: null,
 };
+
+// 声のスプライト：1つの mp3 に全部の言葉が並んでいて、voice.json に [開始秒, 長さ秒] がある
+const voicePack = { buffer: null, clips: null, source: null };
+
+async function loadVoicePack() {
+  try {
+    const [clips, data] = await Promise.all([
+      fetch('voice/voice.json').then((r) => r.json()),
+      fetch('voice/voice.mp3').then((r) => r.arrayBuffer()),
+    ]);
+    // 先にデコードしておけば、打った瞬間に鳴らせる
+    voicePack.buffer = await audioContext.decodeAudioData(data);
+    voicePack.clips = clips;
+  } catch {
+    // 読み込めなければ Web Speech API で読む
+  }
+}
+
+function stopVoice() {
+  try {
+    voicePack.source?.stop();
+  } catch {
+    // まだ鳴っていない・もう止まっている
+  }
+  voicePack.source = null;
+  if (speech.supported) window.speechSynthesis.cancel();
+}
+
+function playVoiceClip(text) {
+  const clip = voicePack.clips?.[text];
+  if (!voicePack.buffer || !clip) return false;
+  const [start, duration] = clip;
+  const source = audioContext.createBufferSource();
+  const gain = audioContext.createGain();
+  source.buffer = voicePack.buffer;
+  gain.gain.value = 0.8;
+  source.connect(gain).connect(audioContext.destination);
+  // mp3 のデコードで前後に少しずれても切れないよう、前後に余白をつける（言葉の間は無音）
+  source.start(0, Math.max(0, start - 0.03), duration + 0.06);
+  voicePack.source = source;
+  return true;
+}
 
 function loadVoiceSetting() {
   try {
@@ -126,9 +169,10 @@ function pickJapaneseVoice() {
 }
 
 function speak(text) {
-  if (!speech.supported || !speech.enabled || !text) return;
+  if (!speech.enabled || !text) return;
   // 速く打っても遅れないよう、前の読み上げは打ち切って最新の文字だけ読む
-  window.speechSynthesis.cancel();
+  stopVoice();
+  if (playVoiceClip(text) || !speech.supported) return;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ja-JP';
   if (speech.voice) utterance.voice = speech.voice;
@@ -334,7 +378,7 @@ function stopRomajiMode() {
   romaji.playing = false;
   clearInterval(romaji.timer);
   romaji.timer = null;
-  if (speech.supported) window.speechSynthesis.cancel();
+  stopVoice();
   romaji.dom.clearOverlay?.classList.add('hidden');
   document.body.classList.remove('romaji-mode');
 }
@@ -364,11 +408,13 @@ function handleRomajiKey(key) {
   romaji.maxCombo = Math.max(romaji.maxCombo, romaji.combo);
   romaji.score += 10 + Math.min(Math.floor(romaji.combo / 10), 5) * 5;
 
+  // 音と声は画面の更新より先に鳴らす（レイアウト計算を待たせない）
+  sounds.key(romaji.combo);
+  speak(current.say);
+
   current.el.classList.remove('current');
   current.el.classList.add('typed');
   fx.retrigger(romaji.keyEls[key], 'pressed');
-  sounds.key(romaji.combo);
-  speak(current.say);
 
   const fever = romaji.combo >= 30;
   const { x, y } = fx.center(current.el);
@@ -551,20 +597,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   buildRomajiKeyboard();
 
-  const voiceControl = $('voice-control');
   const voiceToggle = $('voice-toggle');
+  speech.enabled = loadVoiceSetting();
+  voiceToggle.checked = speech.enabled;
+  voiceToggle.addEventListener('change', () => {
+    speech.enabled = voiceToggle.checked;
+    saveVoiceSetting(speech.enabled);
+    if (!speech.enabled) stopVoice();
+  });
+  loadVoicePack();
   if (speech.supported) {
-    speech.enabled = loadVoiceSetting();
-    voiceToggle.checked = speech.enabled;
-    voiceToggle.addEventListener('change', () => {
-      speech.enabled = voiceToggle.checked;
-      saveVoiceSetting(speech.enabled);
-      if (!speech.enabled) window.speechSynthesis.cancel();
-    });
     pickJapaneseVoice();
     window.speechSynthesis.addEventListener?.('voiceschanged', pickJapaneseVoice);
-  } else {
-    voiceControl.remove();
   }
 
   $('romaji-mode-btn').addEventListener('click', showRomajiSelect);
