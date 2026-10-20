@@ -69,6 +69,71 @@ function saveRomajiProgress(progress) {
 
 const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+// ===== 読み上げ（Web Speech API） =====
+const VOICE_STORAGE_KEY = 'kanjiTyping.romajiVoice';
+
+const LETTER_NAMES = {
+  a: 'エー', b: 'ビー', c: 'シー', d: 'ディー', e: 'イー', f: 'エフ', g: 'ジー',
+  h: 'エイチ', i: 'アイ', j: 'ジェー', k: 'ケー', l: 'エル', m: 'エム', n: 'エヌ',
+  o: 'オー', p: 'ピー', q: 'キュー', r: 'アール', s: 'エス', t: 'ティー', u: 'ユー',
+  v: 'ブイ', w: 'ダブリュー', x: 'エックス', y: 'ワイ', z: 'ゼット',
+};
+
+// ローマ字1音 → ひらがな（KA → か）。同じつづりは最初のかなを使う
+const ROMAJI_TO_KANA = {};
+for (const [kana, roma] of Object.entries(hiraganaToRomaji)) {
+  if (roma && !(roma in ROMAJI_TO_KANA)) ROMAJI_TO_KANA[roma] = kana;
+}
+
+const speech = {
+  supported: 'speechSynthesis' in window,
+  enabled: true,
+  voice: null,
+};
+
+function loadVoiceSetting() {
+  try {
+    return localStorage.getItem(VOICE_STORAGE_KEY) !== 'off';
+  } catch {
+    return true;
+  }
+}
+
+function saveVoiceSetting(enabled) {
+  try {
+    localStorage.setItem(VOICE_STORAGE_KEY, enabled ? 'on' : 'off');
+  } catch {
+    // 保存できなくても読み上げ自体は使える
+  }
+}
+
+function pickJapaneseVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  speech.voice = voices.find((v) => v.lang === 'ja-JP' && v.localService)
+    || voices.find((v) => v.lang.replace('_', '-').startsWith('ja'))
+    || null;
+}
+
+function speak(text) {
+  if (!speech.supported || !speech.enabled || !text) return;
+  // 速く打っても遅れないよう、前の読み上げは打ち切って最新の文字だけ読む
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ja-JP';
+  if (speech.voice) utterance.voice = speech.voice;
+  utterance.rate = 1.15;
+  utterance.pitch = 1.2;
+  window.speechSynthesis.speak(utterance);
+}
+
+// 打った文字の読み方：音の最後の文字ならかな（K→A で「か」）、それ以外はアルファベットの名前
+function readingForChar(segment, index, hasKana) {
+  if (hasKana && index === segment.length - 1 && ROMAJI_TO_KANA[segment]) {
+    return ROMAJI_TO_KANA[segment];
+  }
+  return LETTER_NAMES[segment[index]];
+}
+
 // ===== 問題づくり =====
 function buildRomajiLine(level) {
   if (level.type === 'keys') {
@@ -119,13 +184,14 @@ function renderRomajiPrompt(lines) {
           sep.textContent = '-';
           romajiEl.appendChild(sep);
         }
-        for (const ch of segment) {
+        [...segment].forEach((ch, chIndex) => {
           const chEl = document.createElement('span');
           chEl.className = 'ch';
           chEl.textContent = ch.toUpperCase();
           romajiEl.appendChild(chEl);
-          romaji.chars.push({ ch, el: chEl, lineEl, lastInLine: false });
-        }
+          const say = readingForChar(segment, chIndex, Boolean(token.kana));
+          romaji.chars.push({ ch, say, el: chEl, lineEl, lastInLine: false });
+        });
       });
       tokenEl.appendChild(romajiEl);
       lineEl.appendChild(tokenEl);
@@ -256,6 +322,7 @@ function stopRomajiMode() {
   romaji.playing = false;
   clearInterval(romaji.timer);
   romaji.timer = null;
+  if (speech.supported) window.speechSynthesis.cancel();
   romaji.dom.clearOverlay?.classList.add('hidden');
   document.body.classList.remove('romaji-mode');
 }
@@ -289,6 +356,7 @@ function handleRomajiKey(key) {
   current.el.classList.add('typed');
   fx.retrigger(romaji.keyEls[key], 'pressed');
   sounds.key(romaji.combo);
+  speak(current.say);
 
   const fever = romaji.combo >= 30;
   const { x, y } = fx.center(current.el);
@@ -470,6 +538,22 @@ document.addEventListener('DOMContentLoaded', () => {
   d.clearNextBtn = $('clear-next-btn');
 
   buildRomajiKeyboard();
+
+  const voiceControl = $('voice-control');
+  const voiceToggle = $('voice-toggle');
+  if (speech.supported) {
+    speech.enabled = loadVoiceSetting();
+    voiceToggle.checked = speech.enabled;
+    voiceToggle.addEventListener('change', () => {
+      speech.enabled = voiceToggle.checked;
+      saveVoiceSetting(speech.enabled);
+      if (!speech.enabled) window.speechSynthesis.cancel();
+    });
+    pickJapaneseVoice();
+    window.speechSynthesis.addEventListener?.('voiceschanged', pickJapaneseVoice);
+  } else {
+    voiceControl.remove();
+  }
 
   $('romaji-mode-btn').addEventListener('click', showRomajiSelect);
   $('romaji-back-btn').addEventListener('click', showStartScreen);

@@ -980,6 +980,8 @@ body.romaji-mode .romaji-only { display: inline; }
 body.romaji-mode .kanji-only { display: none; }
 body.romaji-mode .grade-control,
 body.romaji-mode .reading-control { display: none; }
+.voice-control { display: none; }
+body.romaji-mode .voice-control { display: flex; }
 
 .romaji-select {
   text-align: center;
