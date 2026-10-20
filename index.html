@@ -47,11 +47,11 @@
         <div class="score-value" id="accuracy-value">0%</div>
       </div>
       <div class="score-item">
-        <div class="score-label">連続正解</div>
+        <div class="score-label"><span class="kanji-only">連続正解</span><span class="romaji-only">コンボ</span></div>
         <div class="score-value" id="streak-value">0</div>
       </div>
       <div class="score-item">
-        <div class="score-label">残り時間</div>
+        <div class="score-label"><span class="kanji-only">残り時間</span><span class="romaji-only">タイム</span></div>
         <div class="score-value" id="time-display">--:--</div>
       </div>
     </div>
@@ -75,8 +75,71 @@
             <h3>チャレンジモード</h3>
             <p>60秒間で<br>何問正解できるかな？<br><br>タイムアタック<br>に挑戦！</p>
           </div>
+          <div class="mode-card mode-card-romaji" id="romaji-mode-btn">
+            <h3>ローマ字モード</h3>
+            <p>A〜Z のキーを<br>1つずつ打とう！<br><br>1行 → 3行へ<br>レベルアップ！</p>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- ローマ字モード：レベル選択 -->
+    <div class="game-area hidden" id="romaji-select-screen">
+      <div class="romaji-select">
+        <h2>レベルをえらんでね</h2>
+        <div class="level-grid" id="level-grid"></div>
+        <button id="romaji-back-btn">もどる</button>
+      </div>
+    </div>
+
+    <!-- ローマ字モード：プレイ画面 -->
+    <div class="game-area hidden" id="romaji-screen">
+      <div class="romaji-header">
+        <div class="romaji-level-name" id="romaji-level-name">Lv.1</div>
+        <div class="combo-display" id="combo-display" data-tier="0">
+          <span class="combo-num" id="combo-num">0</span>
+          <span class="combo-label">COMBO</span>
+        </div>
+      </div>
+
+      <div class="romaji-prompt" id="romaji-prompt">
+        <div class="prompt-lines" id="prompt-lines"></div>
+        <input
+          type="text"
+          id="romaji-input"
+          class="romaji-input"
+          aria-label="ローマ字入力"
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+        >
+        <div class="tap-hint">ここをタップしてキーボードをだしてね</div>
+      </div>
+
+      <div class="ime-hint hidden" id="ime-hint">キーボードを「ABC（えいすう）」にきりかえてね</div>
+
+      <div class="next-finger">
+        <div class="finger-visual" id="romaji-finger-visual" aria-hidden="true">
+          <div class="hand left-hand">
+            <span class="finger" data-finger="左小指"></span>
+            <span class="finger" data-finger="左薬指"></span>
+            <span class="finger" data-finger="左中指"></span>
+            <span class="finger" data-finger="左人差指"></span>
+            <span class="finger thumb" data-finger="左親指"></span>
+          </div>
+          <div class="hand right-hand">
+            <span class="finger" data-finger="右人差指"></span>
+            <span class="finger" data-finger="右中指"></span>
+            <span class="finger" data-finger="右薬指"></span>
+            <span class="finger" data-finger="右小指"></span>
+            <span class="finger thumb" data-finger="右親指"></span>
+          </div>
+        </div>
+        <div class="next-finger-text" id="next-finger-text"></div>
+      </div>
+
+      <div class="kb" id="romaji-keyboard" aria-hidden="true"></div>
     </div>
 
     <!-- ゲーム画面 -->
@@ -164,8 +227,32 @@
     </div>
   </div>
 
+  <!-- ローマ字モード：レベルクリア -->
+  <div class="clear-overlay hidden" id="romaji-clear">
+    <div class="clear-card">
+      <div class="clear-title" id="clear-title">レベルクリア！</div>
+      <div class="clear-stars" id="clear-stars">
+        <span class="clear-star">★</span><span class="clear-star">★</span><span class="clear-star">★</span>
+      </div>
+      <div class="clear-stats">
+        <div><span>せいかくさ</span><strong id="clear-accuracy">0%</strong></div>
+        <div><span>さいだいコンボ</span><strong id="clear-combo">0</strong></div>
+        <div><span>タイム</span><strong id="clear-time">0秒</strong></div>
+        <div><span>スコア</span><strong id="clear-score">0</strong></div>
+      </div>
+      <div class="clear-unlock" id="clear-unlock"></div>
+      <div class="clear-buttons">
+        <button id="clear-next-btn" class="start-btn">つぎのレベルへ</button>
+        <button id="clear-retry-btn">もういちど</button>
+        <button id="clear-select-btn">レベルえらび</button>
+      </div>
+    </div>
+  </div>
+
   <!-- スクリプト -->
   <script src="kanji-data.js"></script>
+  <script src="effects.js"></script>
   <script src="script.js"></script>
+  <script src="romaji-mode.js"></script>
 </body>
 </html>

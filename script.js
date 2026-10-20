@@ -137,40 +137,6 @@ function getFingersForRomaji(romaji) {
   return fingers;
 }
 
-// 効果音（Web Audio API使用）
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-const sounds = {
-  correct: () => playTone(523.25, 0.1, 'sine'), // C
-  incorrect: () => playTone(220, 0.2, 'sawtooth'), // A
-  complete: () => playMelody([523.25, 659.25, 783.99], 0.15), // C-E-G
-  start: () => playTone(440, 0.1, 'square'), // A
-  tick: () => playTone(880, 0.05, 'sine'), // A
-};
-
-function playTone(frequency, duration, type = 'sine') {
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  oscillator.frequency.value = frequency;
-  oscillator.type = type;
-
-  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + duration);
-}
-
-function playMelody(frequencies, duration) {
-  frequencies.forEach((freq, index) => {
-    setTimeout(() => playTone(freq, duration), index * duration * 1000);
-  });
-}
-
 // DOM要素
 const elements = {
   startScreen: null,
@@ -261,6 +227,7 @@ function setupEventListeners() {
 
 // 画面表示管理
 function showStartScreen() {
+  stopRomajiMode();
   hideAllScreens();
   elements.startScreen?.classList.remove('hidden');
   resetGame();
@@ -270,10 +237,8 @@ function showGameScreen() {
   hideAllScreens();
   elements.gameArea?.classList.remove('hidden');
 
-  // フォーカスを確実に当てる（少し遅延させる）
-  setTimeout(() => {
-    elements.typingInput?.focus();
-  }, 100);
+  // iOS はユーザー操作の中で同期的に focus しないとキーボードが出ない
+  elements.typingInput?.focus();
 }
 
 function showResultScreen() {
@@ -283,9 +248,7 @@ function showResultScreen() {
 }
 
 function hideAllScreens() {
-  elements.startScreen?.classList.add('hidden');
-  elements.gameArea?.classList.add('hidden');
-  elements.resultScreen?.classList.add('hidden');
+  document.querySelectorAll('.game-area').forEach((el) => el.classList.add('hidden'));
 }
 
 // ゲーム開始
@@ -316,6 +279,9 @@ function resetGame() {
     gameState.timerInterval = null;
   }
 
+  elements.timeDisplay.textContent = '--:--';
+  elements.progressBar.style.width = '0%';
+  elements.progressText.textContent = `0 / ${gameState.maxQuestions}`;
   updateDisplay();
 }
 
@@ -370,11 +336,7 @@ function nextQuestion() {
   elements.feedback.textContent = '';
   elements.feedback.className = 'feedback';
 
-  // アニメーション
-  elements.currentKanji.style.animation = 'none';
-  setTimeout(() => {
-    elements.currentKanji.style.animation = 'bounce 1s ease-in-out';
-  }, 10);
+  fx.retrigger(elements.currentKanji, 'kanji-enter');
 
   gameState.questionCount++;
   updateProgress();
@@ -440,6 +402,9 @@ function handleTypingInput(e) {
   // Enterキーが押されたときのみ処理
   if (e.key !== 'Enter') return;
 
+  // 日本語入力の変換確定の Enter では送信しない（Safari は keyCode 229 になる）
+  if (e.isComposing || e.keyCode === 229) return;
+
   // デフォルトの動作を防ぐ
   e.preventDefault();
 
@@ -485,14 +450,24 @@ function handleCorrectAnswer() {
   // スコア計算（連続正解でボーナス）
   const baseScore = 10;
   const streakBonus = Math.min(gameState.streak, 10) * 2;
-  gameState.score += baseScore + streakBonus;
+  const points = baseScore + streakBonus;
+  gameState.score += points;
 
   // フィードバック表示
-  elements.feedback.textContent = `正解！ +${baseScore + streakBonus}点`;
+  elements.feedback.textContent = `正解！ +${points}点`;
   elements.feedback.className = 'feedback correct';
 
-  // パーティクルエフェクト
-  createParticles('✓', '#7cb342');
+  const { x, y } = fx.center(elements.currentKanji);
+  fx.blockBreak(x, y);
+  fx.ring(x, y, '#7cb342', 6);
+  fx.burst(x, y, { count: 20, shapes: ['star'], speed: 7, size: 12 });
+  fx.floatText(x, y - 80, `+${points}`, '#7cb342');
+  fx.pop(elements.currentKanji);
+
+  const streak = gameState.streak;
+  const message = { 3: 'いいね！', 5: 'すごい！', 10: 'てんさい！' }[streak]
+    || (streak > 10 && streak % 5 === 0 ? 'でんせつ！' : null);
+  if (message) fx.celebrate(message, `${streak} れんぞく せいかい！`);
 }
 
 function handleIncorrectAnswer() {
@@ -502,28 +477,7 @@ function handleIncorrectAnswer() {
   elements.feedback.textContent = `不正解... 正解: ${gameState.currentKanji.reading}`;
   elements.feedback.className = 'feedback incorrect';
 
-  createParticles('✗', '#e53935');
-}
-
-// パーティクルエフェクト
-function createParticles(symbol, color) {
-  const gameArea = elements.gameArea;
-  const rect = gameArea.getBoundingClientRect();
-
-  for (let i = 0; i < 5; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.textContent = symbol;
-    particle.style.color = color;
-    particle.style.left = `${rect.width / 2 + (Math.random() - 0.5) * 100}px`;
-    particle.style.top = `${rect.height / 2}px`;
-
-    gameArea.appendChild(particle);
-
-    setTimeout(() => {
-      particle.remove();
-    }, 1000);
-  }
+  fx.shake(elements.currentKanji);
 }
 
 // 表示更新
@@ -592,4 +546,8 @@ function displayResults() {
   const rankElement = document.getElementById('result-rank');
   rankElement.textContent = rank;
   rankElement.style.color = rankColor;
+
+  const great = rank === 'ダイヤモンド' || rank === 'ゴールド';
+  fx.confetti(great ? 150 : 70);
+  if (great) fx.fireworks(3000);
 }
